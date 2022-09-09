@@ -2,6 +2,8 @@ const express = require("express");
 const mongodb = require("mongodb");
 
 const db = require("../data/database");
+const Post = require("../models/post");
+const { post } = require("./auth");
 
 const ObjectId = mongodb.ObjectId;
 const router = express.Router();
@@ -57,12 +59,8 @@ router.post("/posts", async function (req, res) {
     return; // or return res.redirect('/admin'); => Has the same effect
   }
 
-  const newPost = {
-    title: enteredTitle,
-    content: enteredContent,
-  };
-
-  await db.getDb().collection("posts").insertOne(newPost);
+  const newPost = new Post(enteredTitle, enteredContent);
+  await newPost.save();
 
   res.redirect("/admin");
 });
