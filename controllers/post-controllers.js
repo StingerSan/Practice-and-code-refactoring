@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const validationSession = require("../utility/validation-session");
 
 function getHome(req, res) {
   res.render("welcome", { csrfToken: req.csrfToken() });
@@ -11,21 +12,11 @@ async function getAdmin(req, res) {
 
   const posts = await Post.fetchAll();
 
-  let sessionInputData = req.session.inputData;
-
-  if (!sessionInputData) {
-    sessionInputData = {
-      hasError: false,
-      title: "",
-      content: "",
-    };
-  }
-
-  req.session.inputData = null;
+  sessionErrorData = validationSession.getSessionErrorData(req);
 
   res.render("admin", {
     posts: posts,
-    inputData: sessionInputData,
+    inputData: sessionErrorData,
     csrfToken: req.csrfToken(),
   });
 }
@@ -65,21 +56,11 @@ async function getSinglePost(req, res) {
     return res.render("404");
   }
 
-  let sessionInputData = req.session.inputData;
-
-  if (!sessionInputData) {
-    sessionInputData = {
-      hasError: false,
-      title: post.title,
-      content: post.content,
-    };
-  }
-
-  req.session.inputData = null;
+  sessionErrorData = validationSession.getSessionErrorData(req);
 
   res.render("single-post", {
     post: post,
-    inputData: sessionInputData,
+    inputData: sessionErrorData,
     csrfToken: req.csrfToken(),
   });
 }
